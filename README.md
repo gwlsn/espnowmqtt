@@ -147,7 +147,7 @@ ESP-NOW requires all devices to be on the same 2.4GHz channel. When your bridge 
 
 1. Check which channel your 2.4GHz AP uses (or set it manually in your router)
 2. Use that same channel number in `wifi_channel` for your sensor nodes
-3. Channels 1, 6, or 11 recommended (non-overlapping)
+3. It is recommended to lock your 2.4GHz AP to one of channel 1, 6, or 11 (non-overlapping channels) rather than "auto", this prevents the router from switching channels and breaking communication with your sensors
 
 ### Firmware Updates
 
