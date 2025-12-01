@@ -107,8 +107,8 @@ external_components:
     components: [now_mqtt_bridge]
 
 now_mqtt_bridge:
-  wifi_channel: 6            # Must be the same as wifi_channel on sensor node
-  publish_availability: true # Publish online/offline status
+  wifi_channel: 6            # Wifi channel if `wifi:` component not used (if bridge node is on ethernet)
+  publish_availability: true # Publish online/offline status based on user-defined timeout interval
 
 wifi:
   ssid: !secret wifi_ssid
