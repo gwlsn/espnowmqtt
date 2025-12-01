@@ -39,12 +39,6 @@ The improvements in this fork were developed with assistance from Claude Code.
 | **Device availability** | None | Bridge publishes offline status if no packets received within timeout period (default 5 min) |
 | **Send result triggers** | None | `on_send_success` / `on_send_failure` automations |
 
-### Bug Fixes
-
-- `wifi_channel_` member variable is now initialized (was undefined)
-- ESP8266 now respects the channel configuration
-- Fixed static callback pattern for ESP-NOW receive handlers
-
 ## Installation
 
 Add to your ESPHome YAML:
@@ -53,7 +47,7 @@ Add to your ESPHome YAML:
 external_components:
   - source:
       type: git
-      url: https://github.com/YOUR_USERNAME/YOUR_REPO_NAME
+      url: https://github.com/gwlsn/espnowmqtt
     components: [now_mqtt]  # or [now_mqtt_bridge]
 ```
 
@@ -71,7 +65,7 @@ esp32:
 external_components:
   - source:
       type: git
-      url: https://github.com/YOUR_USERNAME/YOUR_REPO_NAME
+      url: https://github.com/gwlsn/espnowmqtt
     components: [now_mqtt]
 
 # No wifi: block — this node is ESP-NOW only
@@ -109,12 +103,11 @@ esp32:
 external_components:
   - source:
       type: git
-      url: https://github.com/YOUR_USERNAME/YOUR_REPO_NAME
+      url: https://github.com/gwlsn/espnowmqtt
     components: [now_mqtt_bridge]
 
 now_mqtt_bridge:
-  wifi_channel: 6           # Only used if wifi: not present
-  publish_rssi: true        # Create RSSI sensor for each device
+  wifi_channel: 6            # Must be the same as wifi_channel on sensor node
   publish_availability: true # Publish online/offline status
 
 wifi:
