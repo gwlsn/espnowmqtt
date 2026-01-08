@@ -271,7 +271,7 @@ namespace esphome
             line += ESPHOME_VERSION;
             line += FIELD_DELIMITER;
             line += ESPHOME_BOARD;
-            line += ":sensor:";
+            line += ":sensor";
 
             return line;
         }
@@ -318,7 +318,7 @@ namespace esphome
             line += ESPHOME_VERSION;
             line += FIELD_DELIMITER;
             line += ESPHOME_BOARD;
-            line += "::";
+            line += ":";
 
             return line;
         }
@@ -363,7 +363,7 @@ namespace esphome
             line += ESPHOME_VERSION;
             line += FIELD_DELIMITER;
             line += ESPHOME_BOARD;
-            line += "::";
+            line += ":";
 
             return line;
         }

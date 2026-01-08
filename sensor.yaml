@@ -30,6 +30,7 @@ i2c:
 
 sensor:
   - platform: bme280_i2c
+    address: 0x76
     temperature:
       name: "Temperature"
     humidity:
