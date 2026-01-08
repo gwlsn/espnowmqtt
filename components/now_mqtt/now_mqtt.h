@@ -4,6 +4,10 @@
 #include "esphome/components/sensor/sensor.h"
 #include "esphome/core/automation.h"
 
+#ifdef USE_ESP32
+#include <esp_now.h>
+#endif
+
 #ifdef USE_BINARY_SENSOR
 #include "esphome/components/binary_sensor/binary_sensor.h"
 #endif
@@ -38,9 +42,9 @@ namespace esphome
             void set_long_range_mode(bool enabled) { this->long_range_mode_ = enabled; }
 
             // Callback registration
-            void add_on_state_callback(std::function<void(float)> callback) { this->callback_.add(callback); }
-            void add_on_send_success_callback(std::function<void()> callback) { this->send_success_callback_.add(callback); }
-            void add_on_send_failure_callback(std::function<void()> callback) { this->send_failure_callback_.add(callback); }
+            void add_on_state_callback(std::function<void(float)> callback) { this->callback_.add(std::move(callback)); }
+            void add_on_send_success_callback(std::function<void()> callback) { this->send_success_callback_.add(std::move(callback)); }
+            void add_on_send_failure_callback(std::function<void()> callback) { this->send_failure_callback_.add(std::move(callback)); }
 
         protected:
             // Configuration
@@ -63,7 +67,9 @@ namespace esphome
 
             // Send methods
             bool send_with_retry_(const uint8_t *data, size_t len);
-            static void send_callback_(const uint8_t *mac_addr, esp_now_send_status_t status);
+#ifdef USE_ESP32
+            static void send_callback_(const wifi_tx_info_t *tx_info, esp_now_send_status_t status);
+#endif
 
             // Sensor update handlers
             void on_sensor_update(sensor::Sensor *obj, float state);

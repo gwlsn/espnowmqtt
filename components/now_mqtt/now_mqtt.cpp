@@ -173,13 +173,15 @@ namespace esphome
         // Send Methods
         // =============================================================================
 
-        void Now_MQTTComponent::send_callback_(const uint8_t *mac_addr, esp_now_send_status_t status)
+#ifdef USE_ESP32
+        void Now_MQTTComponent::send_callback_(const wifi_tx_info_t *tx_info, esp_now_send_status_t status)
         {
             if (instance_ != nullptr) {
                 instance_->last_send_success_ = (status == ESP_NOW_SEND_SUCCESS);
                 instance_->send_in_progress_ = false;
             }
         }
+#endif
 
         bool Now_MQTTComponent::send_with_retry_(const uint8_t *data, size_t len)
         {
@@ -238,32 +240,39 @@ namespace esphome
         {
             std::string line;
             int8_t accuracy = obj->get_accuracy_decimals();
-            
+
             line = str_snake_case(App.get_name());
             line += FIELD_DELIMITER;
-            line += obj->get_device_class().c_str();
+            line += obj->get_device_class_ref();
             line += FIELD_DELIMITER;
-            line += state_class_to_string(obj->get_state_class()).c_str();
+            // Convert state class enum to string
+            switch (obj->get_state_class()) {
+                case sensor::STATE_CLASS_MEASUREMENT: line += "measurement"; break;
+                case sensor::STATE_CLASS_TOTAL_INCREASING: line += "total_increasing"; break;
+                case sensor::STATE_CLASS_TOTAL: line += "total"; break;
+                default: break;
+            }
             line += FIELD_DELIMITER;
             line += str_snake_case(obj->get_name().c_str());
             line += FIELD_DELIMITER;
-            line += obj->get_unit_of_measurement().c_str();
+            line += obj->get_unit_of_measurement_ref();
             line += FIELD_DELIMITER;
             line += value_accuracy_to_string(state, accuracy);
             line += FIELD_DELIMITER;
-            
-            if (obj->get_icon().length() != 0) {
-                line += obj->get_icon();
+
+            const auto &icon = obj->get_icon_ref();
+            if (!icon.empty()) {
+                line += icon;
             } else {
                 line += FIELD_DELIMITER;
             }
-            
+
             line += FIELD_DELIMITER;
             line += ESPHOME_VERSION;
             line += FIELD_DELIMITER;
             line += ESPHOME_BOARD;
             line += ":sensor:";
-            
+
             return line;
         }
 
@@ -288,7 +297,7 @@ namespace esphome
 
             line = str_snake_case(App.get_name());
             line += FIELD_DELIMITER;
-            line += obj->get_device_class().c_str();
+            line += obj->get_device_class_ref();
             line += FIELD_DELIMITER;
             line += "binary_sensor";
             line += FIELD_DELIMITER;
@@ -297,19 +306,20 @@ namespace esphome
             line += FIELD_DELIMITER;
             line += state_s;
             line += FIELD_DELIMITER;
-            
-            if (obj->get_icon().length() != 0) {
-                line += obj->get_icon();
+
+            const auto &icon = obj->get_icon_ref();
+            if (!icon.empty()) {
+                line += icon;
             } else {
                 line += FIELD_DELIMITER;
             }
-            
+
             line += FIELD_DELIMITER;
             line += ESPHOME_VERSION;
             line += FIELD_DELIMITER;
             line += ESPHOME_BOARD;
             line += "::";
-            
+
             return line;
         }
 
@@ -341,19 +351,20 @@ namespace esphome
             line += FIELD_DELIMITER;
             line += state;
             line += FIELD_DELIMITER;
-            
-            if (obj->get_icon().length() != 0) {
-                line += obj->get_icon();
+
+            const auto &icon = obj->get_icon_ref();
+            if (!icon.empty()) {
+                line += icon;
             } else {
                 line += FIELD_DELIMITER;
             }
-            
+
             line += FIELD_DELIMITER;
             line += ESPHOME_VERSION;
             line += FIELD_DELIMITER;
             line += ESPHOME_BOARD;
             line += "::";
-            
+
             return line;
         }
 
