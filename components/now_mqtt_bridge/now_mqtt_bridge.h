@@ -45,6 +45,7 @@ namespace esphome
         protected:
             uint8_t wifi_channel_ = 1;
             bool publish_availability_ = true;
+            bool espnow_initialized_ = false;
 
         private:
             // Device tracking
@@ -67,6 +68,9 @@ namespace esphome
             void publish_binary_sensor_discovery_(const char *tokens[], const std::string &mac_str);
             void publish_binary_sensor_state_(const char *tokens[]);
             void publish_device_availability_(const std::string &device_name, bool online);
+
+            // Initialization
+            void initialize_espnow_();
 
             // Device tracking
             void update_device_seen_(const std::string &mac_str, const std::string &name);

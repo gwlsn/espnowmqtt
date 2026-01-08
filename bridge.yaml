@@ -1,0 +1,30 @@
+esphome:
+  name: espnow-bridge
+
+esp32:
+  board: esp32dev
+  framework:
+    type: esp-idf
+
+logger:
+
+external_components:
+  - source:
+      type: git
+      url: https://github.com/gwlsn/espnowmqtt
+      ref: master
+    refresh: 0s
+    components: [now_mqtt_bridge]
+
+now_mqtt_bridge:
+  wifi_channel: 6            # Wifi channel if `wifi:` component not used (if bridge node is on ethernet)
+  publish_availability: true # Publish online/offline status based on user-defined timeout interval
+
+wifi:
+  ssid: !secret wifi_ssid
+  password: !secret wifi_password
+
+mqtt:
+  broker: homeassistant.local
+  username: !secret mqtt_username
+  password: !secret mqtt_password

@@ -1,0 +1,33 @@
+esphome:
+  name: sensor-node
+
+esp32:
+  board: firebeetle32
+
+external_components:
+  - source:
+      type: git
+      url: https://github.com/gwlsn/espnowmqtt
+    components: [now_mqtt]
+
+# No wifi: block — this node is ESP-NOW only
+now_mqtt:
+  wifi_channel: 6           # Must match your 2.4GHz AP channel
+  long_range_mode: true     # Optional, default true
+  on_send_failure:
+    - logger.log: "Send failed after retries"
+
+i2c:
+  sda: GPIO21
+  scl: GPIO22
+
+sensor:
+  - platform: bme280_i2c
+    temperature:
+      name: "Temperature"
+    humidity:
+      name: "Humidity"
+
+deep_sleep:
+  run_duration: 10s
+  sleep_duration: 5min

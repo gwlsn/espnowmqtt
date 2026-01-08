@@ -1,6 +1,9 @@
 #include "now_mqtt_bridge.h"
 #include "esphome/core/log.h"
 #include "esphome/core/application.h"
+#ifdef USE_WIFI
+#include "esphome/components/wifi/wifi_component.h"
+#endif
 #include <ArduinoJson.h>
 
 namespace esphome
@@ -24,7 +27,6 @@ namespace esphome
         void Now_MQTT_BridgeComponent::setup()
         {
             ESP_LOGD(TAG, "Setting up ESP-NOW MQTT Bridge...");
-            
             instance_ = this;
 
 #ifndef USE_WIFI
@@ -37,7 +39,40 @@ namespace esphome
             ESP_ERROR_CHECK(esp_wifi_set_mode(WIFI_MODE_STA));
             ESP_ERROR_CHECK(esp_wifi_start());
             ESP_ERROR_CHECK(esp_wifi_set_channel(this->wifi_channel_, WIFI_SECOND_CHAN_NONE));
+            // Initialize ESP-NOW immediately when no WiFi component
+            this->initialize_espnow_();
 #endif
+            // When WiFi component is used, ESP-NOW init is deferred to loop()
+            // after WiFi is connected (to avoid conflicts during WiFi scanning)
+            ESP_LOGI(TAG, "ESP-NOW MQTT Bridge setup complete, waiting for WiFi connection...");
+        }
+
+        void Now_MQTT_BridgeComponent::loop()
+        {
+#ifdef USE_WIFI
+            // Initialize ESP-NOW once WiFi is connected
+            if (!this->espnow_initialized_ && wifi::global_wifi_component->is_connected()) {
+                this->initialize_espnow_();
+            }
+#endif
+            // Don't run timeout checks until ESP-NOW is initialized
+            if (!this->espnow_initialized_) {
+                return;
+            }
+
+            // Periodically check for device timeouts
+            static uint32_t last_check = 0;
+            uint32_t now = millis();
+
+            if (now - last_check > 60000) {  // Check every minute
+                last_check = now;
+                this->check_device_timeouts_();
+            }
+        }
+
+        void Now_MQTT_BridgeComponent::initialize_espnow_()
+        {
+            ESP_LOGD(TAG, "Initializing ESP-NOW...");
 
             // Set AP+STA mode for ESP-NOW reception while connected to WiFi
             esp_err_t err = esp_wifi_set_mode(WIFI_MODE_APSTA);
@@ -57,21 +92,10 @@ namespace esphome
             // Register receive callback
             esp_now_register_recv_cb(Now_MQTT_BridgeComponent::static_receive_callback_);
 
+            this->espnow_initialized_ = true;
             ESP_LOGI(TAG, "ESP-NOW MQTT Bridge initialized (channel=%d, availability=%s)",
-                     this->wifi_channel_, 
+                     this->wifi_channel_,
                      this->publish_availability_ ? "yes" : "no");
-        }
-
-        void Now_MQTT_BridgeComponent::loop()
-        {
-            // Periodically check for device timeouts
-            static uint32_t last_check = 0;
-            uint32_t now = millis();
-            
-            if (now - last_check > 60000) {  // Check every minute
-                last_check = now;
-                this->check_device_timeouts_();
-            }
         }
 
         // =============================================================================
