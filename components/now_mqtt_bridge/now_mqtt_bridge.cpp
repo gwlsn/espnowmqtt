@@ -85,9 +85,14 @@ namespace esphome
             // Register receive callback
             esp_now_register_recv_cb(Now_MQTT_BridgeComponent::static_receive_callback_);
 
+            // Get actual WiFi channel for logging
+            uint8_t primary_channel;
+            wifi_second_chan_t secondary_channel;
+            esp_wifi_get_channel(&primary_channel, &secondary_channel);
+
             this->espnow_initialized_ = true;
             ESP_LOGI(TAG, "ESP-NOW MQTT Bridge initialized (channel=%d, availability=%s)",
-                     this->wifi_channel_,
+                     primary_channel,
                      this->publish_availability_ ? "yes" : "no");
         }
 
