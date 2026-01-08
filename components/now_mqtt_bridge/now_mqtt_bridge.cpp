@@ -74,17 +74,10 @@ namespace esphome
         {
             ESP_LOGD(TAG, "Initializing ESP-NOW...");
 
-            // Set AP+STA mode for ESP-NOW reception while connected to WiFi
-            esp_err_t err = esp_wifi_set_mode(WIFI_MODE_APSTA);
+            // Initialize ESP-NOW (works in STA mode, no need for APSTA)
+            esp_err_t err = esp_now_init();
             if (err != ESP_OK) {
-                ESP_LOGE(TAG, "Failed to set APSTA mode: %s", esp_err_to_name(err));
-                this->mark_failed();
-                return;
-            }
-
-            // Initialize ESP-NOW
-            if (esp_now_init() != ESP_OK) {
-                ESP_LOGE(TAG, "Failed to initialize ESP-NOW");
+                ESP_LOGE(TAG, "Failed to initialize ESP-NOW: %s", esp_err_to_name(err));
                 this->mark_failed();
                 return;
             }
