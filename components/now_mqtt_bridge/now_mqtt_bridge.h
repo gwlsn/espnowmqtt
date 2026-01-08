@@ -55,7 +55,7 @@ namespace esphome
 
             // Callback handlers
             void on_espnow_receive_(const uint8_t *mac, const uint8_t *data, int len);
-            static void static_receive_callback_(const uint8_t *mac, const uint8_t *data, int len);
+            static void static_receive_callback_(const esp_now_recv_info_t *recv_info, const uint8_t *data, int len);
 
             // Message processing
             void process_sensor_message_(const char *tokens[], const std::string &mac_str);

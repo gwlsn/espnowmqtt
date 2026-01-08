@@ -78,10 +78,10 @@ namespace esphome
         // Static Callback
         // =============================================================================
 
-        void Now_MQTT_BridgeComponent::static_receive_callback_(const uint8_t *mac, const uint8_t *data, int len)
+        void Now_MQTT_BridgeComponent::static_receive_callback_(const esp_now_recv_info_t *recv_info, const uint8_t *data, int len)
         {
             if (instance_ != nullptr) {
-                instance_->on_espnow_receive_(mac, data, len);
+                instance_->on_espnow_receive_(recv_info->src_addr, data, len);
             }
         }
 
@@ -151,7 +151,7 @@ namespace esphome
 
         void Now_MQTT_BridgeComponent::publish_sensor_discovery_(const char *tokens[], const std::string &mac_str)
         {
-            DynamicJsonDocument doc(512);
+            JsonDocument doc;
             
             if (strlen(tokens[1]) > 0) doc["dev_cla"] = tokens[1];
             if (strlen(tokens[4]) > 0) doc["unit_of_meas"] = tokens[4];
@@ -194,7 +194,7 @@ namespace esphome
         void Now_MQTT_BridgeComponent::publish_sensor_state_(const char *tokens[])
         {
             std::string state_topic = std::string(tokens[0]) + "/sensor/" + tokens[3] + "/state";
-            mqtt::global_mqtt_client->publish(state_topic, tokens[5], 2, true);
+            mqtt::global_mqtt_client->publish(state_topic, std::string(tokens[5]), 2, true);
             ESP_LOGD(TAG, "Published state: %s = %s", state_topic.c_str(), tokens[5]);
         }
 
@@ -204,7 +204,7 @@ namespace esphome
 
         void Now_MQTT_BridgeComponent::publish_binary_sensor_discovery_(const char *tokens[], const std::string &mac_str)
         {
-            DynamicJsonDocument doc(512);
+            JsonDocument doc;
             
             if (strlen(tokens[3]) > 0) doc["name"] = tokens[3];
             if (strlen(tokens[1]) > 0) doc["dev_cla"] = tokens[1];
@@ -238,7 +238,7 @@ namespace esphome
         void Now_MQTT_BridgeComponent::publish_binary_sensor_state_(const char *tokens[])
         {
             std::string state_topic = std::string(tokens[0]) + "/binary_sensor/" + tokens[3] + "/state";
-            mqtt::global_mqtt_client->publish(state_topic, tokens[5], 2, true);
+            mqtt::global_mqtt_client->publish(state_topic, std::string(tokens[5]), 2, true);
         }
 
         // =============================================================================
