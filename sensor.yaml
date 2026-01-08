@@ -3,6 +3,11 @@ esphome:
 
 esp32:
   board: firebeetle32
+  framework:
+    type: arduino
+
+logger:
+  level: DEBUG
 
 external_components:
   - source:
@@ -12,7 +17,7 @@ external_components:
 
 # No wifi: block — this node is ESP-NOW only
 now_mqtt:
-  wifi_channel: 6           # Must match your 2.4GHz AP channel
+  wifi_channel: 1           # Must match your 2.4GHz AP channel
   long_range_mode: true     # Optional, default true
   on_send_failure:
     - logger.log: "Send failed after retries"
@@ -30,4 +35,4 @@ sensor:
 
 deep_sleep:
   run_duration: 10s
-  sleep_duration: 5min
+  sleep_duration: 1min
