@@ -33,8 +33,25 @@ sensor:
     address: 0x76
     temperature:
       name: "Temperature"
+      filters:
+        - offset: -7.0
     humidity:
       name: "Humidity"
+
+  - platform: adc
+    pin: GPIO34
+    name: "Battery"
+    device_class: battery
+    unit_of_measurement: "%"
+    attenuation: 11db
+    filters:
+      - multiply: 2.0  # Voltage divider ratio on FireBeetle
+      - calibrate_linear:
+          - 3.0 -> 0.0
+          - 4.2 -> 100.0
+      - clamp:
+          min_value: 0
+          max_value: 100
 
 deep_sleep:
   run_duration: 10s

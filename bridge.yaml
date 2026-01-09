@@ -25,6 +25,6 @@ wifi:
   password: !secret wifi_password
 
 mqtt:
-  broker: 10.0.0.6
+  broker: !secret mqtt_broker
   username: !secret mqtt_username
   password: !secret mqtt_password
