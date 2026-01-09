@@ -34,7 +34,7 @@ sensor:
     temperature:
       name: "Temperature"
       filters:
-        - offset: -7.0
+        - offset: -4.5
     humidity:
       name: "Humidity"
 
@@ -55,4 +55,4 @@ sensor:
 
 deep_sleep:
   run_duration: 10s
-  sleep_duration: 1min
+  sleep_duration: 2h
